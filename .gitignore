@@ -1,0 +1,12 @@
+*.stl
+*.3mf
+*.gcode
+*.zip
+*.tar
+*.tar.gz
+
+# Временные файлы редакторов
+*.swp
+*.swo
+*~
+.DS_Store
