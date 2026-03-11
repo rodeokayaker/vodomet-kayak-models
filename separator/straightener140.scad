@@ -46,61 +46,32 @@
 //   );
 $fn = 96;
 
+// Общие параметры
+use <common_params.scad>;
+use <flow_straightener_core.scad>;
+use <adapter_plate_common.scad>;
+
 // Параметры
-D_tube_inner = 88;        // Внутренний диаметр трубы, мм
-D_hub_bottom = 30;        // Диаметр ступицы внизу, мм
-H_blade = 100;            // Высота крыльчатки (лопастей), мм
-H_hub = 110;              // Высота ступицы, мм
-N_blades = 7;             // Количество лопастей
-thickness_max = 1.5;      // Толщина прямого профиля, мм
-angle_start = -30;        // Начальный угол лопастей, градусы (отрицательный для противоположного вращения)
-angle_end = 0;            // Конечный угол лопастей, градусы
+D_tube_inner = D_TUBE_IN_88;        // Внутренний диаметр трубы, мм
+D_hub_bottom = D_HUB_BOTTOM_30;     // Диаметр ступицы внизу, мм
+H_blade = H_BLADE_100;              // Высота крыльчатки (лопастей), мм
+H_hub = H_HUB_110;                  // Высота ступицы, мм
+N_blades = 7;                       // Количество лопастей
+thickness_max = TH_BLADE_1_5;       // Толщина прямого профиля, мм
+angle_start = ANGLE_BLADE_START_NEG_30; // Начальный угол лопастей, градусы (отрицательный для противоположного вращения)
+angle_end = ANGLE_BLADE_END_0;      // Конечный угол лопастей, градусы
 
 // Радиусы
 R_outer = D_tube_inner / 2;      // Внешний радиус (к стенке трубы)
 R_inner_bottom = D_hub_bottom / 2; // Внутренний радиус внизу (к ступице)
 
 // Посадка подшипника 608
-bearing_od = 22;          // наружный диаметр
-bearing_id = 8;           // внутренний диаметр
-bearing_w  = 7;           // ширина
-bearing_fit = 0.2;        // зазор под печать (0.1..0.25)
-bearing_shoulder = 2.0;   // упор подшипника снизу/сверху
+bearing_od = BEARING608_OD;          // наружный диаметр
+bearing_id = BEARING608_ID;          // внутренний диаметр
+bearing_w  = BEARING608_W;           // ширина
+bearing_fit = BEARING608_FIT;        // зазор под печать (0.1..0.25)
+bearing_shoulder = BEARING608_SHOULDER;   // упор подшипника снизу/сверху
 
-
-// Функция для генерации точек симметричного профиля NACA 00XX
-// t - максимальная толщина в процентах от хорды (для NACA 0015: t=15)
-// chord - длина хорды
-// points - количество точек на половине профиля
-function naca_symmetric_points(t, chord, points=20) = 
-    let(
-        // Генерируем точки от передней кромки (x=0) до задней (x=chord)
-        x_coords = [for (i = [0:points-1]) i * chord / (points-1)],
-        // Формула толщины для симметричного профиля NACA
-        // y_t = 5*t*(0.2969*sqrt(x) - 0.1260*x - 0.3516*x^2 + 0.2843*x^3 - 0.1036*x^4)
-        // где t - максимальная толщина в процентах от хорды
-        thickness_factor = t / 100,
-        y_coords = [
-            for (x = x_coords)
-                let(
-                    x_norm = x / chord,  // Нормализованная координата (0..1)
-                    y_t = x_norm > 0 ? 
-                        5 * thickness_factor * chord * (
-                            0.2969 * sqrt(x_norm) - 
-                            0.1260 * x_norm - 
-                            0.3516 * pow(x_norm, 2) + 
-                            0.2843 * pow(x_norm, 3) - 
-                            0.1036 * pow(x_norm, 4)
-                        ) : 0
-                )
-                y_t
-        ]
-    )
-    // Возвращаем точки: верхняя поверхность (от передней к задней), затем нижняя (от задней к передней)
-    concat(
-        [for (i = [0:points-1]) [x_coords[i], y_coords[i]]],
-        [for (i = [points-1:-1:0]) [x_coords[i], -y_coords[i]]]
-    );
 
 // Модуль для создания прямого профиля (прямоугольного)
 // chord - длина хорды (радиально от ступицы к стенке)
@@ -112,19 +83,6 @@ module straight_profile(chord=50, thickness=1.5, height=0.001) {
     polygon([[0,0],[0,thickness],[chord,thickness],[chord,0]]);
 //    cube([chord, thickness, height]);
 }
-
-// Точка профиля (x,y) в мировой СК: translate(R,0,0) -> rotate(c,s) -> translate(0,0,z)
-function blade_point_world(p, R, c, s, z) = [
-    (p[0] + R) * c - p[1] * s,
-    (p[0] + R) * s + p[1] * c,
-    z
-];
-
-// Функция ease-out для изменения угла
-// t - параметр от 0 до 1
-// Возвращает угол от angle_start до angle_end
-function ease_out_angle(t, angle_start, angle_end) = 
-    angle_start + (angle_end - angle_start) * (1 - pow(1 - t, 2));
 
 // Модуль одной лопасти
 module flow_straightener_blade(
@@ -309,20 +267,20 @@ module flow_straightener_assembly(
 
 module adapter_plate(
 // Основные размеры кольца
-outer_diameter = 120,      // внешний диаметр пластины, мм
-inner_diameter = 86,       // внутренний диаметр (проходное отверстие), мм
-plate_thickness = 10,      // толщина пластины, мм
+outer_diameter = ADAPTER_OUTER_D_120,      // внешний диаметр пластины, мм
+inner_diameter = ADAPTER_INNER_D_86,       // внутренний диаметр (проходное отверстие), мм
+plate_thickness = ADAPTER_PLATE_TH_10,     // толщина пластины, мм
 
 // Параметры ушей (креплений)
-num_ears = 4,              // количество ушей
-ear_diameter = 22,         // диаметр круглого уха, мм
-bolt_hole_diameter = 6.5,  // диаметр отверстия под M5, мм
-bolt_distance_from_center = 56.56, // расстояние от центра до центра болта, мм
+num_ears = ADAPTER_NUM_EARS_4, // количество ушей
+ear_diameter = EAR_D_22,       // диаметр круглого уха, мм
+bolt_hole_diameter = EAR_BOLT_D_6_5,  // диаметр отверстия под M5, мм
+bolt_distance_from_center = EAR_BOLT_R_56_56, // расстояние от центра до центра болта, мм
 
 // Желобок для резинки
-groove_circle_radius = 49,  // радиус окружности желобка, мм
-groove_diameter = 2,        // диаметр полукруглого желобка, мм
-groove_depth = 1.8           // глубина желобка (радиус), мм
+groove_circle_radius = GROOVE_R_49,  // радиус окружности желобка, мм
+groove_diameter = GROOVE_D_2,        // диаметр полукруглого желобка, мм
+groove_depth = GROOVE_DEPTH_1_8      // глубина желобка (радиус), мм
 ) {
     difference() {
         union() {

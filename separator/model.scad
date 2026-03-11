@@ -1,5 +1,7 @@
 // Параметрическая модель ВНУТРЕННЕГО КАНАЛА Y‑разделителя для CFD (SimFlow)
 
+use <common_params.scad>;
+
 $fn=96;
 
 module transition(
@@ -133,16 +135,16 @@ module transition_box(Din, Dout, angle, roundrad=10){
 
 
 module y_separator_channel(
-    Din = 86,           // диаметр входа, мм
-    Dout = 61,          // диаметр выхода (каждой ветви), мм
-    L_in = 0,         // длина прямого входного участка, мм
-    L_branch = 292,     // длина наклонного участка ветви до выхода на горизонталь, мм
-    L_core = 150,      // длина/масштаб зоны развилки, мм
-    L_out = 40,        // длина горизонтального прямого участка у выхода, мм
-    L_exit = 20,
-    L_exittrans = 50,
-    Dexit = 44,
-    branch_angle = 20,  // угол отклонения ветви от оси входа, градусы
+    Din = D_TUBE_IN_86,      // диаметр входа, мм
+    Dout = D_BRANCH_OUT_61,  // диаметр выхода (каждой ветви), мм
+    L_in = 0,               // длина прямого входного участка, мм
+    L_branch = L_BRANCH_292, // длина наклонного участка ветви до выхода на горизонталь, мм
+    L_core = L_CORE_150,    // длина/масштаб зоны развилки, мм
+    L_out = L_OUT_40,       // длина горизонтального прямого участка у выхода, мм
+    L_exit = L_EXIT_20,
+    L_exittrans = L_EXIT_TRANS_50,
+    Dexit = D_EXIT_44,
+    branch_angle = ANGLE_BRANCH_20,  // угол отклонения ветви от оси входа, градусы
     R_round = 0,        // радиус скругления углов, мм
     $fn = 96            // детализация окружностей
 
@@ -214,20 +216,20 @@ module y_separator_channel(
 
 module adapter_plate(
 // Основные размеры кольца
-outer_diameter = 120,      // внешний диаметр пластины, мм
-inner_diameter = 86,       // внутренний диаметр (проходное отверстие), мм
-plate_thickness = 10,      // толщина пластины, мм
+outer_diameter = ADAPTER_OUTER_D_120,      // внешний диаметр пластины, мм
+inner_diameter = ADAPTER_INNER_D_86,       // внутренний диаметр (проходное отверстие), мм
+plate_thickness = ADAPTER_PLATE_TH_10,     // толщина пластины, мм
 
 // Параметры ушей (креплений)
-num_ears = 4,              // количество ушей
-ear_diameter = 22,         // диаметр круглого уха, мм
-bolt_hole_diameter = 6.5,  // диаметр отверстия под M5, мм
-bolt_distance_from_center = 56.56, // расстояние от центра до центра болта, мм
+num_ears = ADAPTER_NUM_EARS_4, // количество ушей
+ear_diameter = EAR_D_22,       // диаметр круглого уха, мм
+bolt_hole_diameter = EAR_BOLT_D_6_5,  // диаметр отверстия под M5, мм
+bolt_distance_from_center = EAR_BOLT_R_56_56, // расстояние от центра до центра болта, мм
 
 // Желобок для резинки
-groove_circle_radius = 49,  // радиус окружности желобка, мм
-groove_diameter = 2,        // диаметр полукруглого желобка, мм
-groove_depth = 1           // глубина желобка (радиус), мм
+groove_circle_radius = GROOVE_R_49,  // радиус окружности желобка, мм
+groove_diameter = GROOVE_D_2,        // диаметр полукруглого желобка, мм
+groove_depth = GROOVE_DEPTH_1        // глубина желобка (радиус), мм
 ) {
     difference() {
         union() {
@@ -347,14 +349,14 @@ module separator_all(){
 // Вызов модуля для рендера/экспорта
 difference(){
 y_separator_channel(
-    Din = 92,           // диаметр входа, мм
-    Dout = 67,          // диаметр выхода (каждой ветви), мм
-    L_branch = 292,     // длина наклонного участка ветви до выхода на горизонталь, мм
-    L_core = 150,      // длина/масштаб зоны развилки, мм
-    branch_angle = 20,  // угол отклонения ветви от оси входа, градусы
-    R_round = 0,        // радиус скругления углов, мм
-    Dexit = 50,
-    $fn = 96            // детализация окружностей
+    Din = D_TUBE_OUT_92,           // диаметр входа, мм
+    Dout = D_BRANCH_OUT_67,        // диаметр выхода (каждой ветви), мм
+    L_branch = L_BRANCH_292,       // длина наклонного участка ветви до выхода на горизонталь, мм
+    L_core = L_CORE_150,           // длина/масштаб зоны развилки, мм
+    branch_angle = ANGLE_BRANCH_20,// угол отклонения ветви от оси входа, градусы
+    R_round = 0,                   // радиус скругления углов, мм
+    Dexit = D_EXIT_50,
+    $fn = 96                        // детализация окружностей
     );
 
   y_separator_channel($fn=96);
@@ -381,10 +383,10 @@ bolt_distance_from_center = 45
 );*/
     
 rotate([0,180,0])    
-adapter_plate(outer_diameter = 90,      
-inner_diameter = 61,  
-groove_circle_radius = 38,
-bolt_distance_from_center = 45
+adapter_plate(outer_diameter = ADAPTER_OUTER_D_90,
+inner_diameter = ADAPTER_INNER_D_61,
+groove_circle_radius = GROOVE_R_38,
+bolt_distance_from_center = EAR_BOLT_R_45
 );    
 }
 
@@ -398,10 +400,10 @@ bolt_distance_from_center = 45
 );*/
     
 rotate([0,180,0])    
-adapter_plate(outer_diameter = 90,      
-inner_diameter = 61,  
-groove_circle_radius = 38,
-bolt_distance_from_center = 45
+adapter_plate(outer_diameter = ADAPTER_OUTER_D_90,
+inner_diameter = ADAPTER_INNER_D_61,
+groove_circle_radius = GROOVE_R_38,
+bolt_distance_from_center = EAR_BOLT_R_45
 ); 
 }
 }
