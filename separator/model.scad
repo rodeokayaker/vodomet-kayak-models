@@ -1,6 +1,7 @@
 // Параметрическая модель ВНУТРЕННЕГО КАНАЛА Y‑разделителя для CFD (SimFlow)
 
 use <common_params.scad>;
+use <adapter_plate_common.scad>;
 
 $fn=96;
 
@@ -348,23 +349,25 @@ module separator_all(){
 
 // Вызов модуля для рендера/экспорта
 difference(){
-y_separator_channel(
-    Din = D_TUBE_OUT_92,           // диаметр входа, мм
-    Dout = D_BRANCH_OUT_67,        // диаметр выхода (каждой ветви), мм
-    L_branch = L_BRANCH_292,       // длина наклонного участка ветви до выхода на горизонталь, мм
-    L_core = L_CORE_150,           // длина/масштаб зоны развилки, мм
-    branch_angle = ANGLE_BRANCH_20,// угол отклонения ветви от оси входа, градусы
-    R_round = 0,                   // радиус скругления углов, мм
-    Dexit = D_EXIT_50,
-    $fn = 96                        // детализация окружностей
-    );
+    union(){
+    y_separator_channel(
+        Din = D_TUBE_OUT_92,           // диаметр входа, мм
+        Dout = D_BRANCH_OUT_67,        // диаметр выхода (каждой ветви), мм
+        L_branch = L_BRANCH_292,       // длина наклонного участка ветви до выхода на горизонталь, мм
+        L_core = L_CORE_150,           // длина/масштаб зоны развилки, мм
+        branch_angle = ANGLE_BRANCH_20,// угол отклонения ветви от оси входа, градусы
+        R_round = 0,                   // радиус скругления углов, мм
+        Dexit = D_EXIT_50,
+        $fn = 96                        // детализация окружностей
+        );
+        adapter_plate();
+    }
 
-  y_separator_channel($fn=96);
+    y_separator_channel($fn=96);
 //translate([0,0,-50])
 //separator_wing();
 }
 
-adapter_plate();
 //rotate([0,180,0])
 //adapter_plate();
 
