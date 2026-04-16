@@ -1,4 +1,5 @@
-use <common_params.scad>;
+// Важно: для глобальных констант нужен include (use не импортирует переменные)
+include <common_params.scad>;
 use <adapter_plate_common.scad>;
 
 $fn = 96;
@@ -31,7 +32,8 @@ groove_depth = GROOVE_DEPTH_1        // глубина канавки, мм
         bolt_distance_from_center = bolt_distance_from_center,
         groove_circle_radius = groove_circle_radius,
         groove_diameter = groove_diameter,
-        groove_depth = groove_depth
+        groove_depth = groove_depth,
+        tube_diameter = D_BRANCH_OUT_67
     );
 }
 

@@ -46,7 +46,8 @@
 //   );
 
 // Общие параметры
-use <common_params.scad>;
+// Важно: для глобальных констант нужен include (use не импортирует переменные)
+include <common_params.scad>;
 use <flow_straightener_core.scad>;
 
 // Параметры
